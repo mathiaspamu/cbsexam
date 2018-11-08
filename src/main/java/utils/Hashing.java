@@ -3,16 +3,26 @@ package utils;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import model.User;
 import org.bouncycastle.util.encoders.Hex;
 
 public final class Hashing {
 
-  // TODO: You should add a salt and make this secure
+  // TODO: You should add a salt and make this secure (underway)
   public static String md5(String rawString) {
+
+    if (rawString == "null"){
+      return "null";
+
+    } else
     try {
 
       // We load the hashing algoritm we wish to use.
       MessageDigest md = MessageDigest.getInstance("MD5");
+
+      // Add created time which will give every new user a unique password but not the ones already in the database
+      rawString = rawString + User.getCreatedTime();
 
       // We convert to byte array
       byte[] byteArray = md.digest(rawString.getBytes());
@@ -37,11 +47,19 @@ public final class Hashing {
     return null;
   }
 
-  // TODO: You should add a salt and make this secure
+  // TODO: You should add a salt and make this secure (underway)
   public static String sha(String rawString) {
+
+    if (rawString == "null"){
+      return "null";
+
+    } else
     try {
       // We load the hashing algoritm we wish to use.
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+      // Add created time which will give every new user a unique password but not the ones already in the database
+      rawString = rawString + User.getCreatedTime();
 
       // We convert to byte array
       byte[] hash = digest.digest(rawString.getBytes(StandardCharsets.UTF_8));

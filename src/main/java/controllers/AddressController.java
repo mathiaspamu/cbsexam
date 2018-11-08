@@ -23,8 +23,8 @@ public class AddressController {
     // Our SQL string
     String sql = "SELECT * FROM address where id=" + id;
 
-    // Do the query and set the initial value to null
-    ResultSet rs = dbCon.query(sql);
+    // Do the executeQuery and set the initial value to null
+    ResultSet rs = dbCon.executeQuery(sql);
     Address address = null;
 
     try {
@@ -63,7 +63,7 @@ public class AddressController {
     }
 
     // Insert the product in the DB
-    int addressID = dbCon.insert(
+    int addressID = dbCon.executeUpdate(
         "INSERT INTO address(name, city, zipcode, street_address) VALUES('"
             + address.getName()
             + "', '"

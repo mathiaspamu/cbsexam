@@ -24,11 +24,11 @@ public class OrderController {
       dbCon = new DatabaseController();
     }
 
-    // Build SQL string to query
+    // Build SQL string to executeQuery
     String sql = "SELECT * FROM orders where id=" + id;
 
-    // Do the query in the database and create an empty object for the results
-    ResultSet rs = dbCon.query(sql);
+    // Do the executeQuery in the database and create an empty object for the results
+    ResultSet rs = dbCon.executeQuery(sql);
     Order order = null;
 
     try {
@@ -78,7 +78,7 @@ public class OrderController {
 
     String sql = "SELECT * FROM order";
 
-    ResultSet rs = dbCon.query(sql);
+    ResultSet rs = dbCon.executeQuery(sql);
     ArrayList<Order> orders = new ArrayList<Order>();
 
     try {
@@ -138,7 +138,7 @@ public class OrderController {
     // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.
 
     // Insert the product in the DB
-    int orderID = dbCon.insert(
+    int orderID = dbCon.executeUpdate(
         "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES("
             + order.getCustomer().getId()
             + ", "

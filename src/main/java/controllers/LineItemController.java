@@ -25,8 +25,8 @@ public class LineItemController {
     // Construct our SQL
     String sql = "SELECT * FROM line_item where order_id=" + orderID;
 
-    // Do the query and initialize an empty list for the results
-    ResultSet rs = dbCon.query(sql);
+    // Do the executeQuery and initialize an empty list for the results
+    ResultSet rs = dbCon.executeQuery(sql);
     ArrayList<LineItem> items = new ArrayList<>();
 
     try {
@@ -58,6 +58,18 @@ public class LineItemController {
 
   public static LineItem createLineItem(LineItem lineItem, int orderID) {
 
+    String success = "Line item created succesfully";
+    String failure = "Line item not created";
+    String sql = "INSERT INTO line_item(product_id, order_id, price, quantity) VALUES(\"\n" +
+            "            + lineItem.getProduct().getId()\n" +
+            "            + \", \"\n" +
+            "            + orderID\n" +
+            "            + \", \"\n" +
+            "            + lineItem.getPrice()\n" +
+            "            + \", \"\n" +
+            "            + lineItem.getQuantity()\n" +
+            "            + \")\");";
+
     // Write in log that we've reach this step
     Log.writeLog(ProductController.class.getName(), lineItem, "Actually creating a line item in DB", 0);
 
@@ -71,17 +83,10 @@ public class LineItemController {
 
     // Update the ID of the product
 
+
     // Insert the product in the DB
-    int lineItemID = dbCon.insert(
-        "INSERT INTO line_item(product_id, order_id, price, quantity) VALUES("
-            + lineItem.getProduct().getId()
-            + ", "
-            + orderID
-            + ", "
-            + lineItem.getPrice()
-            + ", "
-            + lineItem.getQuantity()
-            + ")");
+    int lineItemID = dbCon.executeUpdate(
+        "INSERT INTO
 
     if (lineItemID != 0) {
       //Update the productid of the product before returning

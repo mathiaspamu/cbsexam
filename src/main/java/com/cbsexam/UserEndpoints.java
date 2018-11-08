@@ -3,11 +3,7 @@ package com.cbsexam;
 import com.google.gson.Gson;
 import controllers.UserController;
 import java.util.ArrayList;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import model.User;
@@ -91,11 +87,16 @@ public class UserEndpoints {
     return Response.status(400).entity("Endpoint not implemented yet").build();
   }
 
-  // TODO: Make the system able to delete users
-  public Response deleteUser(String x) {
+  // TODO: Make the system able to delete users (underway)
+  @DELETE
+  @Path("/{userId}")
+  public Response deleteUser(@PathParam("userId") int userId) {
+
+    Log.writeLog(UserEndpoints.class.getName(), this, "Trying to delete user, please wait (omskriv)", 0);
+    UserController.deleteUser(userId);
 
     // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+    return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("Endpoint not implemented yet").build();
   }
 
   // TODO: Make the system able to update users

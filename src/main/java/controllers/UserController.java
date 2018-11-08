@@ -21,14 +21,15 @@ public class UserController {
       dbCon = new DatabaseController();
     }
 
-    // Build the query for DB
+    // Build the executeQuery for DB
     String sql = "SELECT * FROM user where id=" + id;
 
-    // Actually do the query
-    ResultSet rs = dbCon.query(sql);
+    // Actually do the executeQuery
+    ResultSet rs = dbCon.executeQuery(sql);
     User user = null;
 
     try {
+
       // Get first object, since we only have one
       if (rs.next()) {
         user =
@@ -67,11 +68,12 @@ public class UserController {
     // Build SQL
     String sql = "SELECT * FROM user";
 
-    // Do the query and initialyze an empty list for use if we don't get results
-    ResultSet rs = dbCon.query(sql);
+    // Do the executeQuery and initialyze an empty list for use if we don't get results
+    ResultSet rs = dbCon.executeQuery(sql);
     ArrayList<User> users = new ArrayList<User>();
 
     try {
+
       // Loop through DB Data
       while (rs.next()) {
         User user =
@@ -95,21 +97,9 @@ public class UserController {
 
   public static User createUser(User user) {
 
-    // Write in log that we've reach this step
-    Log.writeLog(UserController.class.getName(), user, "Actually creating a user in DB", 0);
-
-    // Set creation time for user.
-    user.setCreatedTime(System.currentTimeMillis() / 1000L);
-
-    // Check for DB Connection
-    if (dbCon == null) {
-      dbCon = new DatabaseController();
-    }
-
-    // Insert the user in the DB
-    // TODO: Hash the user password before saving it.
-    int userID = dbCon.insert(
-        "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
+    String success = "User created successfully";
+    String failure = "User not created";
+    String sql = "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
             + user.getFirstname()
             + "', '"
             + user.getLastname()
@@ -119,17 +109,41 @@ public class UserController {
             + user.getEmail()
             + "', "
             + user.getCreatedTime()
-            + ")");
+            + ")";
 
-    if (userID != 0) {
-      //Update the userid of the user before returning
-      user.setId(userID);
-    } else{
-      // Return null if user has not been inserted into database
-      return null;
+    // Write in log that we've reach this step
+    Log.writeLog(UserController.class.getName(), user, "Actually creating a user in DB", 0);
+
+    // Set creation time for user
+    user.setCreatedTime(System.currentTimeMillis() / 1000L);
+
+    // Check for DB Connection
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
     }
+
+    // Insert the user in the DB
+    // TODO: Hash the user password before saving it.
+    dbCon.executeUpdate(sql, success, failure);
 
     // Return user
     return user;
   }
+
+  public static boolean deleteUser (int userId) {
+
+    String success = "User was successfully deleted";
+    String failure = "Fail (omskriv)";
+    String sql = "DELETE FROM user WHERE id=" + userId;
+
+    // Check for DB connection
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+  dbCon.executeUpdate(sql, success, failure);
+
+    return false;
+  }
+
 }

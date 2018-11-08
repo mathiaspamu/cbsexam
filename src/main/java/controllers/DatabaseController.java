@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import utils.Config;
+import utils.Log;
 
 public class DatabaseController {
 
@@ -50,11 +51,11 @@ public class DatabaseController {
   }
 
   /**
-   * Do a query in the database
+   * Do a executeQuery in the database
    *
    * @return a ResultSet or Null if Empty
    */
-  public ResultSet query(String sql) {
+  public ResultSet executeQuery(String sql) {
 
     // Check if we have a connection
     if (connection == null)
@@ -68,7 +69,7 @@ public class DatabaseController {
       // Build the statement as a prepared statement
       PreparedStatement stmt = connection.prepareStatement(sql);
 
-      // Actually fire the query to the DB
+      // Actually fire the executeQuery to the DB
       rs = stmt.executeQuery();
 
       // Return the results
@@ -81,7 +82,12 @@ public class DatabaseController {
     return rs;
   }
 
-  public int insert(String sql) {
+  // Statement.RETURN_GENERATED_KEYS
+
+
+
+  // har lavet om, så der nu kan benyttes alter, update...
+  public boolean executeUpdate(String sql, String success, String failure) {
 
     // Set key to 0 as a start
     int result = 0;
@@ -93,21 +99,28 @@ public class DatabaseController {
     try {
       // Build the statement up in a safe way
       PreparedStatement statement =
-          connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+          connection.prepareStatement(sql);
 
-      // Execute query
+      // Execute executeQuery
       result = statement.executeUpdate();
 
       // Get our key back in order to update the user
-      ResultSet generatedKeys = statement.getGeneratedKeys();
-      if (generatedKeys.next()) {
-        return generatedKeys.getInt(1);
+      // ResultSet generatedKeys = statement.getGeneratedKeys();
+      //if (generatedKeys.next()) {
+        //return generatedKeys.getInt(1);
+
+      //}
+      if (result == 1) {
+        Log.writeLog(DatabaseController.class.getName(), sql, success, 0);
+        return true;
+      } else {
+        Log.writeLog(DatabaseController.class.getName(), sql, failure, 1);
       }
     } catch (SQLException e) {
       System.out.println(e.getMessage());
     }
 
     // Return the resultset which at this point will be null
-    return result;
+    return false;
   }
 }

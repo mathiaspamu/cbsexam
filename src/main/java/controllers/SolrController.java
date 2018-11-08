@@ -43,7 +43,7 @@ public final class SolrController {
   }
 
   /**
-   * Do a query in SolR
+   * Do a executeQuery in SolR
    *
    * @return a ResultSet or Null if Empty
    */

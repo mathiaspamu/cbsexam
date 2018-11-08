@@ -21,11 +21,11 @@ public class ProductController {
       dbCon = new DatabaseController();
     }
 
-    // Build the SQL query for the DB
+    // Build the SQL executeQuery for the DB
     String sql = "SELECT * FROM product where id=" + id;
 
-    // Run the query in the DB and make an empty object to return
-    ResultSet rs = dbCon.query(sql);
+    // Run the executeQuery in the DB and make an empty object to return
+    ResultSet rs = dbCon.executeQuery(sql);
     Product product = null;
 
     try {
@@ -61,7 +61,7 @@ public class ProductController {
 
     String sql = "SELECT * FROM product where sku='" + sku + "'";
 
-    ResultSet rs = dbCon.query(sql);
+    ResultSet rs = dbCon.executeQuery(sql);
     Product product = null;
 
     try {
@@ -100,7 +100,7 @@ public class ProductController {
     // TODO: Use caching layer.
     String sql = "SELECT * FROM product";
 
-    ResultSet rs = dbCon.query(sql);
+    ResultSet rs = dbCon.executeQuery(sql);
     ArrayList<Product> products = new ArrayList<Product>();
 
     try {
@@ -137,7 +137,7 @@ public class ProductController {
     }
 
     // Insert the product in the DB
-    int productID = dbCon.insert(
+    int productID = dbCon.executeUpdate(
         "INSERT INTO product(product_name, sku, price, description, stock, created_at) VALUES('"
             + product.getName()
             + "', '"
