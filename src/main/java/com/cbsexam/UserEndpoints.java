@@ -1,5 +1,6 @@
 package com.cbsexam;
 
+import cache.UserCache;
 import com.google.gson.Gson;
 import controllers.UserController;
 import java.util.ArrayList;
@@ -17,6 +18,9 @@ public class UserEndpoints {
    * @param idUser
    * @return Responses
    */
+
+  UserCache userCache = new UserCache();
+
   @GET
   @Path("/{idUser}")
   public Response getUser(@PathParam("idUser") int idUser) {
@@ -43,7 +47,7 @@ public class UserEndpoints {
     Log.writeLog(this.getClass().getName(), this, "Get all users", 0);
 
     // Get a list of users
-    ArrayList<User> users = UserController.getUsers();
+    ArrayList<User> users = userCache.getUsers(false);
 
     // TODO: Add Encryption to JSON (FIX)
     // Transfer users to json in order to return it to the user
@@ -81,18 +85,30 @@ public class UserEndpoints {
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response loginUser(String x) {
+  public Response loginUser(String body) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
-  }
+    User user = new Gson().fromJson(body, User.class);
+    String token = UserController.authorizeUser(user);
+
+    try {
+      if (token == null) {
+        // Return a response with status 200 and JSON as type
+        return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(token).build();
+      } else {
+        return Response.status(400).entity("Unable to login").build();
+      }
+      } catch(Exception ex){
+        System.out.println(ex.getMessage());
+      }
+      return null;
+    }
 
   // TODO: Make the system able to delete users (underway)
   @DELETE
   @Path("/{userId}")
   public Response deleteUser(@PathParam("userId") int userId) {
 
-    Log.writeLog(UserEndpoints.class.getName(), this, "Trying to delete user, please wait (omskriv)", 0);
+    Log.writeLog(UserEndpoints.class.getName(), this, "Please wait while user will be deleted", 0);
     UserController.deleteUser(userId);
 
     // Return a response with status 200 and JSON as type

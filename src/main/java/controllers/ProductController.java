@@ -29,6 +29,7 @@ public class ProductController {
     Product product = null;
 
     try {
+
       // Get first row and create the object and return it
       if (rs.next()) {
         product =
@@ -43,7 +44,7 @@ public class ProductController {
         // Return the product
         return product;
       } else {
-        System.out.println("No user found");
+        System.out.println("No product found");
       }
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
@@ -55,6 +56,7 @@ public class ProductController {
 
   public static Product getProductBySku(String sku) {
 
+    // Check for DB connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
@@ -65,6 +67,7 @@ public class ProductController {
     Product product = null;
 
     try {
+
       if (rs.next()) {
         product =
             new Product(
@@ -77,7 +80,7 @@ public class ProductController {
 
         return product;
       } else {
-        System.out.println("No user found");
+        System.out.println("No product found");
       }
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());

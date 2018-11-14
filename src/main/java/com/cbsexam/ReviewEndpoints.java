@@ -17,6 +17,7 @@ public class ReviewEndpoints {
    * @param reviewTitle
    * @return Responses
    */
+
   @GET
   @Path("/title/{title}")
   public Response search(@PathParam("title") String reviewTitle) {

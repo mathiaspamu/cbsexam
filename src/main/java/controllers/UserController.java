@@ -3,7 +3,16 @@ package controllers;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.mysql.cj.protocol.Resultset;
 import model.User;
+import utils.Hashing;
 import utils.Log;
 
 public class UserController {
@@ -33,12 +42,12 @@ public class UserController {
       // Get first object, since we only have one
       if (rs.next()) {
         user =
-            new User(
-                rs.getInt("id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("password"),
-                rs.getString("email"));
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
 
         // return the create object
         return user;
@@ -77,12 +86,12 @@ public class UserController {
       // Loop through DB Data
       while (rs.next()) {
         User user =
-            new User(
-                rs.getInt("id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("password"),
-                rs.getString("email"));
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
 
         // Add element to list
         users.add(user);
@@ -130,10 +139,10 @@ public class UserController {
     return user;
   }
 
-  public static boolean deleteUser (int userId) {
+  public static boolean deleteUser(int userId) {
 
     String success = "User was successfully deleted";
-    String failure = "Fail (omskriv)";
+    String failure = "The system failed to delete user";
     String sql = "DELETE FROM user WHERE id=" + userId;
 
     // Check for DB connection
@@ -141,9 +150,73 @@ public class UserController {
       dbCon = new DatabaseController();
     }
 
-  dbCon.executeUpdate(sql, success, failure);
+    dbCon.executeUpdate(sql, success, failure);
 
     return false;
   }
 
+  public static String authorizeUser(User user) {
+
+    // Check for connection
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+    // Build query for DB
+    String sql = "SELECT email, password FROM cbsexam.user WHERE email = '" + user.getEmail() + "' AND password = '" + Hashing.sha(user.getPassword()) + "' OR password = '" + user.getPassword() + "')";
+
+    // Actually do the query
+    ResultSet rs = dbCon.query(sql);
+    User userLogin = null;
+
+    try {
+      // Get first and only object
+      if (rs.next()) {
+
+        user = new User(
+                rs.getInt("id"),
+                rs.getString("first_name"),
+                rs.getString("last_name"),
+                rs.getString("password"),
+                rs.getString("email"));
+
+        try {
+          Algorithm algorithm = Algorithm.HMAC256("secret");
+          String token = JWT.create()
+                  .withIssuer("auth0")
+                  .sign(algorithm);
+        } catch (JWTCreationException exception){
+          //Invalid Signing configuration / Couldn't convert Claims.
+          System.out.println("Something went wrong" + exception.getMessage());
+        }
+
+        // Verifying the token
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
+
+        try {
+          Algorithm algorithm = Algorithm.HMAC256("secret");
+          JWTVerifier verifier = JWT.require(algorithm)
+                  .withIssuer("auth0")
+                  .build(); //Reusable verifier instance
+          DecodedJWT jwt = verifier.verify(token);
+        } catch (JWTVerificationException exception1){
+          // Invalid signature/claims
+          System.out.println("Something went wrong with verifying the token" + exception1.getMessage());
+        }
+
+        // Return the token directly
+        return token;
+
+      } else {
+        System.out.println("No user found");
+      }
+
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+    }
+
+    // Return null
+    return null;
+
+  }
 }

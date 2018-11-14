@@ -10,42 +10,42 @@ import org.bouncycastle.util.encoders.Hex;
 public final class Hashing {
 
   // TODO: You should add a salt and make this secure (underway)
-  public static String md5(String rawString) {
+  // public static String md5(String rawString) {
 
-    if (rawString == "null"){
-      return "null";
+    //if (rawString == "null"){
+      //return "null";
 
-    } else
-    try {
+   // } else
+    //try {
 
       // We load the hashing algoritm we wish to use.
-      MessageDigest md = MessageDigest.getInstance("MD5");
+      //MessageDigest md = MessageDigest.getInstance("MD5");
 
       // Add created time which will give every new user a unique password but not the ones already in the database
-      rawString = rawString + User.getCreatedTime();
+      //rawString = rawString + User.getCreatedTime();
 
       // We convert to byte array
-      byte[] byteArray = md.digest(rawString.getBytes());
+      //byte[] byteArray = md.digest(rawString.getBytes());
 
       // Initialize a string buffer
-      StringBuffer sb = new StringBuffer();
+      //StringBuffer sb = new StringBuffer();
 
       // Run through byteArray one element at a time and append the value to our stringBuffer
-      for (int i = 0; i < byteArray.length; ++i) {
-        sb.append(Integer.toHexString((byteArray[i] & 0xFF) | 0x100).substring(1, 3));
-      }
+      //for (int i = 0; i < byteArray.length; ++i) {
+       // sb.append(Integer.toHexString((byteArray[i] & 0xFF) | 0x100).substring(1, 3));
+      //}
 
       //Convert back to a single string and return
-      return sb.toString();
+      //return sb.toString();
 
-    } catch (java.security.NoSuchAlgorithmException e) {
+    //} catch (java.security.NoSuchAlgorithmException e) {
 
       //If somethings breaks
-      System.out.println("Could not hash string");
-    }
+     // System.out.println("Could not hash string");
+    //}
 
-    return null;
-  }
+    //return null;
+  //}
 
   // TODO: You should add a salt and make this secure (underway)
   public static String sha(String rawString) {

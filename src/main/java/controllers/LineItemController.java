@@ -86,7 +86,7 @@ public class LineItemController {
 
     // Insert the product in the DB
     int lineItemID = dbCon.executeUpdate(
-        "INSERT INTO
+
 
     if (lineItemID != 0) {
       //Update the productid of the product before returning
