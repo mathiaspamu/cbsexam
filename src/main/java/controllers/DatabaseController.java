@@ -55,12 +55,11 @@ public class DatabaseController {
    *
    * @return a ResultSet or Null if Empty
    */
-  public ResultSet executeQuery(String sql) {
+  public ResultSet executeQuery(String sql, String success, String failure) {
 
     // Check if we have a connection
     if (connection == null)
       connection = getConnection();
-
 
     // We set the resultset as empty.
     ResultSet rs = null;

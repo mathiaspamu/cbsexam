@@ -10,7 +10,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.mysql.cj.protocol.Resultset;
 import model.User;
 import utils.Hashing;
 import utils.Log;
@@ -25,16 +24,17 @@ public class UserController {
 
   public static User getUser(int id) {
 
+    String success = "success";
+    String failure = "failure";
+    String sql = "SELECT * FROM user where id=" + id;
+
     // Check for connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    // Build the executeQuery for DB
-    String sql = "SELECT * FROM user where id=" + id;
-
     // Actually do the executeQuery
-    ResultSet rs = dbCon.executeQuery(sql);
+    ResultSet rs = dbCon.executeQuery(sql, success, failure);
     User user = null;
 
     try {
@@ -69,16 +69,17 @@ public class UserController {
    */
   public static ArrayList<User> getUsers() {
 
+    String success = "success";
+    String failure = "failure";
+    String sql = "SELECT * FROM user";
+
     // Check for DB connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    // Build SQL
-    String sql = "SELECT * FROM user";
-
     // Do the executeQuery and initialyze an empty list for use if we don't get results
-    ResultSet rs = dbCon.executeQuery(sql);
+    ResultSet rs = dbCon.executeQuery(sql, success, failure);
     ArrayList<User> users = new ArrayList<User>();
 
     try {
@@ -157,16 +158,17 @@ public class UserController {
 
   public static String authorizeUser(User user) {
 
+    String success = "success";
+    String failure = "failure";
+    String sql = "SELECT email, password FROM cbsexam.user WHERE email = '" + user.getEmail() + "' AND password = '" + Hashing.sha(user.getPassword()) + "' OR password = '" + user.getPassword() + "')";
+
     // Check for connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    // Build query for DB
-    String sql = "SELECT email, password FROM cbsexam.user WHERE email = '" + user.getEmail() + "' AND password = '" + Hashing.sha(user.getPassword()) + "' OR password = '" + user.getPassword() + "')";
-
     // Actually do the query
-    ResultSet rs = dbCon.query(sql);
+    ResultSet rs = dbCon.executeQuery(sql, success, failure);
     User userLogin = null;
 
     try {

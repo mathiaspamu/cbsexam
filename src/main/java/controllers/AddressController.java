@@ -15,16 +15,17 @@ public class AddressController {
 
   public static Address getAddress(int id) {
 
+    String success = "success";
+    String failure = "failure";
+    String sql = "SELECT * FROM address where id=" + id;
+
     // Check for DB Connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    // Our SQL string
-    String sql = "SELECT * FROM address where id=" + id;
-
     // Do the executeQuery and set the initial value to null
-    ResultSet rs = dbCon.executeQuery(sql);
+    ResultSet rs = dbCon.executeQuery(sql, success, failure);
     Address address = null;
 
     try {
@@ -54,6 +55,18 @@ public class AddressController {
 
   public static Address createAddress(Address address) {
 
+    String success = "Address created successfully";
+    String failure = "Failed to create address";
+    String sql = "INSERT INTO address(name, city, zipcode, street_address) VALUES('\"\n" +
+            "            + address.getName()\n" +
+            "            + \"', '\"\n" +
+            "            + address.getCity()\n" +
+            "            + \"', '\"\n" +
+            "            + address.getZipCode()\n" +
+            "            + \"', '\"\n" +
+            "            + address.getStreetAddress()\n" +
+            "            + \"')\");";
+
     // Write in log that we've reach this step
     Log.writeLog(ProductController.class.getName(), address, "Actually creating a line item in DB", 0);
 
@@ -63,24 +76,15 @@ public class AddressController {
     }
 
     // Insert the product in the DB
-    int addressID = dbCon.executeUpdate(
-        "INSERT INTO address(name, city, zipcode, street_address) VALUES('"
-            + address.getName()
-            + "', '"
-            + address.getCity()
-            + "', '"
-            + address.getZipCode()
-            + "', '"
-            + address.getStreetAddress()
-            + "')");
+    dbCon.executeUpdate(sql, success, failure);
 
-    if (addressID != 0) {
+    //if (addressID != 0) {
       //Update the productid of the product before returning
-      address.setId(addressID);
-    } else{
+      //address.setId(addressID);
+    //} else{
       // Return null if product has not been inserted into database
-      return null;
-    }
+      //return null;
+    //}
 
     // Return product, will be null at this point
     return address;

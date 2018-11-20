@@ -16,16 +16,17 @@ public class ProductController {
 
   public static Product getProduct(int id) {
 
+    String success = "success";
+    String failure = "failure";
+    String sql = "SELECT * FROM product where id=" + id;
+
     // check for connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    // Build the SQL executeQuery for the DB
-    String sql = "SELECT * FROM product where id=" + id;
-
     // Run the executeQuery in the DB and make an empty object to return
-    ResultSet rs = dbCon.executeQuery(sql);
+    ResultSet rs = dbCon.executeQuery(sql, success, failure);
     Product product = null;
 
     try {
@@ -56,14 +57,16 @@ public class ProductController {
 
   public static Product getProductBySku(String sku) {
 
+    String success = "success";
+    String failure = "failure";
+    String sql = "SELECT * FROM product where sku='" + sku + "'";
+
     // Check for DB connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    String sql = "SELECT * FROM product where sku='" + sku + "'";
-
-    ResultSet rs = dbCon.executeQuery(sql);
+    ResultSet rs = dbCon.executeQuery(sql, success, failure);
     Product product = null;
 
     try {
@@ -96,14 +99,17 @@ public class ProductController {
    */
   public static ArrayList<Product> getProducts() {
 
+    String success = "success";
+    String failure = "failure";
+    String sql = "SELECT * FROM product";
+
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
     // TODO: Use caching layer.
-    String sql = "SELECT * FROM product";
 
-    ResultSet rs = dbCon.executeQuery(sql);
+    ResultSet rs = dbCon.executeQuery(sql, success, failure);
     ArrayList<Product> products = new ArrayList<Product>();
 
     try {
@@ -128,6 +134,22 @@ public class ProductController {
 
   public static Product createProduct(Product product) {
 
+    String success = "Product created successfully";
+    String failure = "Failed to create address";
+    String sql = "INSERT INTO product(product_name, sku, price, description, stock, created_at) VALUES('"
+            + product.getName()
+            + "', '"
+            + product.getSku()
+            + "', '"
+            + product.getPrice()
+            + "', '"
+            + product.getDescription()
+            + "', "
+            + product.getStock()
+            + "', "
+            + product.getCreatedTime()
+            + ")";
+
     // Write in log that we've reach this step
     Log.writeLog(ProductController.class.getName(), product, "Actually creating a product in DB", 0);
 
@@ -140,28 +162,15 @@ public class ProductController {
     }
 
     // Insert the product in the DB
-    int productID = dbCon.executeUpdate(
-        "INSERT INTO product(product_name, sku, price, description, stock, created_at) VALUES('"
-            + product.getName()
-            + "', '"
-            + product.getSku()
-            + "', '"
-            + product.getPrice()
-            + "', '"
-            + product.getDescription()
-            + "', "
-            + product.getStock()
-            + "', "
-            + product.getCreatedTime()
-            + ")");
+    dbCon.executeUpdate(sql, success, failure);
 
-    if (productID != 0) {
+    //if (productID != 0) {
       //Update the productid of the product before returning
-      product.setId(productID);
-    } else{
+      //product.setId(productID);
+    //} else{
       // Return null if product has not been inserted into database
-      return null;
-    }
+      //return null;
+    //}
 
     // Return product
     return product;

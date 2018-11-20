@@ -17,16 +17,17 @@ public class LineItemController {
 
   public static ArrayList<LineItem> getLineItemsForOrder(int orderID) {
 
+    String success = "success";
+    String failure = "failure";
+    String sql = "SELECT * FROM line_item where order_id=" + orderID;
+
     // Check for DB Connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    // Construct our SQL
-    String sql = "SELECT * FROM line_item where order_id=" + orderID;
-
     // Do the executeQuery and initialize an empty list for the results
-    ResultSet rs = dbCon.executeQuery(sql);
+    ResultSet rs = dbCon.executeQuery(sql, success, failure);
     ArrayList<LineItem> items = new ArrayList<>();
 
     try {
@@ -85,17 +86,17 @@ public class LineItemController {
 
 
     // Insert the product in the DB
-    int lineItemID = dbCon.executeUpdate(
+    dbCon.executeUpdate(sql, success, failure);
 
 
-    if (lineItemID != 0) {
+    //if (lineItemID != 0) {
       //Update the productid of the product before returning
-      lineItem.setId(lineItemID);
-    } else{
+      //lineItem.setId(lineItemID);
+    //} else{
 
       // Return null if product has not been inserted into database
-      return null;
-    }
+      //return null;
+    //}
 
     // Return product
     return lineItem;

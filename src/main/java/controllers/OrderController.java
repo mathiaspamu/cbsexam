@@ -20,16 +20,17 @@ public class OrderController {
 
   public static Order getOrder(int id) {
 
-    // check for connection
+    String success = "success";
+    String failure = "failure";
+    String sql = "SELECT * FROM orders where id=" + id;
+
+    // Check for DB connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    // Build SQL string to executeQuery
-    String sql = "SELECT * FROM orders where id=" + id;
-
     // Do the executeQuery in the database and create an empty object for the results
-    ResultSet rs = dbCon.executeQuery(sql);
+    ResultSet rs = dbCon.executeQuery(sql, success, failure);
     Order order = null;
 
     try {
@@ -41,7 +42,7 @@ public class OrderController {
         Address billingAddress = AddressController.getAddress(rs.getInt("billing_address_id"));
         Address shippingAddress = AddressController.getAddress(rs.getInt("shipping_address_id"));
 
-        // Create an object instance of order from the database dataa
+        // Create an object instance of order from the database data
         order =
             new Order(
                 rs.getInt("id"),
@@ -73,13 +74,15 @@ public class OrderController {
    */
   public static ArrayList<Order> getOrders() {
 
+    String success = "success";
+    String failure = "failure";
+    String sql = "SELECT * FROM order";
+
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    String sql = "SELECT * FROM order";
-
-    ResultSet rs = dbCon.executeQuery(sql);
+    ResultSet rs = dbCon.executeQuery(sql, success, failure);
     ArrayList<Order> orders = new ArrayList<Order>();
 
     try {
@@ -117,8 +120,25 @@ public class OrderController {
 
   public static Order createOrder(Order order) {
 
+    String success = "Order created successfully";
+    String failure = "Order not created";
+    String sql = "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES("
+                    + order.getCustomer().getId()
+                    + ", "
+                    + order.getBillingAddress().getId()
+                    + ", "
+                    + order.getShippingAddress().getId()
+                    + ", "
+                    + order.calculateOrderTotal()
+                    + ", "
+                    + order.getCreatedAt()
+                    + ", "
+                    + order.getUpdatedAt()
+                    + ")";
+
+
     // Write in log that we've reach this step
-    Log.writeLog(OrderController.class.getName(), order, "Actually creating a order in DB", 0);
+    Log.writeLog(OrderController.class.getName(), order, "Actually creating an order in DB", 0);
 
     // Set creation and updated time for order.
     order.setCreatedAt(System.currentTimeMillis() / 1000L);
@@ -143,26 +163,12 @@ public class OrderController {
     try {
       connection.setAutoCommit(false);
 
-      // Insert product in DB
-      int orderID = dbCon.insert(
-              "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES("
-                      + order.getCustomer().getId()
-                      + ", "
-                      + order.getBillingAddress().getId()
-                      + ", "
-                      + order.getShippingAddress().getId()
-                      + ", "
-                      + order.calculateOrderTotal()
-                      + ", "
-                      + order.getCreatedAt()
-                      + ", "
-                      + order.getUpdatedAt()
-                      + ")");
+      dbCon.executeUpdate(sql, success, failure);
 
-      if (orderID != 0) {
+      //if (orderID != 0) {
         //Update the productid of the product before returning
-        order.setId(orderID);
-      }
+        //order.setId(orderID);
+      //}
 
       // Create an empty list in order to go trough items and then save them back with ID
       ArrayList<LineItem> items = new ArrayList<LineItem>();
@@ -177,7 +183,7 @@ public class OrderController {
 
       // Commit and save SQL updates
       connection.commit();
-      System.out.println("Changes committed succesfully");
+      System.out.println("Changes committed successfully");
 
     } catch (SQLException e) {
 
