@@ -2,19 +2,21 @@ package model;
 
 public class User {
 
-  public int id;
-  public String firstname;
-  public String lastname;
-  public String email;
+  private int id;
+  private String firstname;
+  private String lastname;
+  private String email;
   private String password;
+  private String token;
   private static long createdTime;
 
-  public User(int id, String firstname, String lastname, String password, String email) {
+  public User(int id, String firstname, String lastname, String password, String email, String token) {
     this.id = id;
     this.firstname = firstname;
     this.lastname = lastname;
     this.password = password;
     this.email = email;
+    this.token = token;
   }
 
   public int getId() {
@@ -56,6 +58,10 @@ public class User {
   public void setPassword(String password) {
     this.password = password;
   }
+
+  public String getToken() { return token; }
+
+  public void setToken(String token) { this.token = token; }
 
   public static long getCreatedTime() {
     return createdTime;

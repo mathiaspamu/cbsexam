@@ -9,43 +9,43 @@ import org.bouncycastle.util.encoders.Hex;
 
 public final class Hashing {
 
-  // TODO: You should add a salt and make this secure (underway)
-  // public static String md5(String rawString) {
+  /* TODO: You should add a salt and make this secure (underway)
+  public static String md5(String rawString) {
 
-    //if (rawString == "null"){
-      //return "null";
+    if (rawString == "null"){
+      return "null";
 
-   // } else
-    //try {
+    } else
+    try {
 
-      // We load the hashing algoritm we wish to use.
-      //MessageDigest md = MessageDigest.getInstance("MD5");
+       We load the hashing algoritm we wish to use.
+      MessageDigest md = MessageDigest.getInstance("MD5");
 
-      // Add created time which will give every new user a unique password but not the ones already in the database
-      //rawString = rawString + User.getCreatedTime();
+      Add created time which will give every new user a unique password but not the ones already in the database
+      rawString = rawString + User.getCreatedTime();
 
-      // We convert to byte array
-      //byte[] byteArray = md.digest(rawString.getBytes());
+      We convert to byte array
+      byte[] byteArray = md.digest(rawString.getBytes());
 
-      // Initialize a string buffer
-      //StringBuffer sb = new StringBuffer();
+      Initialize a string buffer
+      StringBuffer sb = new StringBuffer();
 
-      // Run through byteArray one element at a time and append the value to our stringBuffer
-      //for (int i = 0; i < byteArray.length; ++i) {
-       // sb.append(Integer.toHexString((byteArray[i] & 0xFF) | 0x100).substring(1, 3));
-      //}
+      Run through byteArray one element at a time and append the value to our stringBuffer
+      for (int i = 0; i < byteArray.length; ++i) {
+       sb.append(Integer.toHexString((byteArray[i] & 0xFF) | 0x100).substring(1, 3));
+      }
 
-      //Convert back to a single string and return
-      //return sb.toString();
+      Convert back to a single string and return
+      return sb.toString();
 
-    //} catch (java.security.NoSuchAlgorithmException e) {
+    } catch (java.security.NoSuchAlgorithmException e) {
 
-      //If somethings breaks
-     // System.out.println("Could not hash string");
-    //}
+      If somethings breaks
+      System.out.println("Could not hash string");
+    }
 
-    //return null;
-  //}
+    return null;
+  } */
 
   // TODO: You should add a salt and make this secure (underway)
   public static String sha(String rawString) {
@@ -55,7 +55,7 @@ public final class Hashing {
 
     } else
     try {
-      // We load the hashing algoritm we wish to use.
+      // We load the hashing algorithm we wish to use.
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
       // Add created time which will give every new user a unique password but not the ones already in the database

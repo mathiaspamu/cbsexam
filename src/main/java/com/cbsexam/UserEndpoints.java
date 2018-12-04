@@ -19,8 +19,6 @@ public class UserEndpoints {
    * @return Responses
    */
 
-  UserCache userCache = new UserCache();
-
   @GET
   @Path("/{idUser}")
   public Response getUser(@PathParam("idUser") int idUser) {
@@ -47,7 +45,7 @@ public class UserEndpoints {
     Log.writeLog(this.getClass().getName(), this, "Get all users", 0);
 
     // Get a list of users
-    ArrayList<User> users = userCache.getUsers(false);
+    ArrayList<User> users = UserController.getUsers();
 
     // TODO: Add Encryption to JSON (FIX)
     // Transfer users to json in order to return it to the user
@@ -81,21 +79,24 @@ public class UserEndpoints {
     }
   }
 
-  // TODO: Make the system able to login users and assign them a token to use throughout the system.
+  // TODO: Make the system able to login users and assign them a token to use throughout the system. (underway)
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response loginUser(String body) {
+  public Response userLogin(String body) {
 
     User user = new Gson().fromJson(body, User.class);
-    String token = UserController.authorizeUser(user);
+
+    User userLogin;
+
+    userLogin = UserController.authorizeUser(user);
 
     try {
-      if (token == null) {
+      if (userLogin != null) {
         // Return a response with status 200 and JSON as type
-        return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(token).build();
+        return Response.status(201).type(MediaType.APPLICATION_JSON_TYPE).entity("Authorization granted").build();
       } else {
-        return Response.status(400).entity("Unable to login").build();
+        return Response.status(403).entity("Authorization not granted").build();
       }
       } catch(Exception ex){
         System.out.println(ex.getMessage());
@@ -108,17 +109,29 @@ public class UserEndpoints {
   @Path("/{userId}")
   public Response deleteUser(@PathParam("userId") int userId) {
 
-    Log.writeLog(UserEndpoints.class.getName(), this, "Please wait while user will be deleted", 0);
-    UserController.deleteUser(userId);
+    boolean report;
+    report = UserController.deleteUser(userId);
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("Endpoint not implemented yet").build();
+    if (report)
+      return Response.status(204).type(MediaType.APPLICATION_JSON_TYPE).build();
+    else
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("Endpoint not implemented yet").build();
   }
 
-  // TODO: Make the system able to update users
-  public Response updateUser(String x) {
+  // TODO: Make the system able to update users (underway)
+  @PUT
+  @Path("/")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response updateUser(String body) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+    User dataUpdate = new Gson().fromJson(body, User.class);
+    User userUpdate = UserController.updateUser(dataUpdate);
+
+    String json = new Gson().toJson(userUpdate);
+
+    if (userUpdate != null)
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    else
+      return Response.status(405).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
   }
 }

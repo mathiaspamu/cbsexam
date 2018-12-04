@@ -145,9 +145,11 @@ CREATE TABLE `user` (
   `last_name` varchar(255) COLLATE utf8_danish_ci NOT NULL,
   `password` varchar(255) COLLATE utf8_danish_ci NOT NULL,
   `email` varchar(255) COLLATE utf8_danish_ci NOT NULL,
+  `token` VARCHAR(255) NULL,
   `created_at` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id_UNIQUE` (`id`)
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  UNIQUE (email)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -157,7 +159,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Henrik','Thorn','abc','henrik@abc.dk',0),(2,'Peter','Pan','ABCD','ha@as.dk',0),(3,'Henrik','Thorn','abc','henrik@abc.dk',1539260226),(4,'Henrik','Thorn','abc','henrik@abc.dk',1539260302),(5,'Henrik','Thorn','abc','henrik@abc.dk',1539260590),(6,'Henrik','Thorn','900150983cd24fb0d6963f7d28e17f72','henrik@abc.dk',1539260683),(7,'Henrik','Thorn','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad','henrik@abc.dk',1539260935),(8,'Henrik','Thorn','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad','henrik@abc.dk',1539277503),(9,'Henrik','Thorn','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad','henrik@abc.dk',1539277743),(10,'Henrik','Thorn','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad','henrik@abc.dk',1539277791),(11,'Henrik','Thorn','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad','henrik@abc.dk',1539277902),(12,'Henrik','Thorn','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad','henrik@abc.dk',1539335661),(13,'null','null','null','null',1539338689);
+INSERT INTO `user` (id, first_name, last_name, password, email, created_at) VALUES (1,'Henrik','Thorn','abc','henrik@abc.dk',0),(2,'Peter','Pan','ABCD','ha@as.dk',0),(3,'Henrik','Thorn','abc','henrika@abc.dk',1539260226),(4,'Henrik','Thorn','abc','henrikb@abc.dk',1539260302),(5,'Henrik','Thorn','abc','henrikc@abc.dk',1539260590),(6,'Henrik','Thorn','900150983cd24fb0d6963f7d28e17f72','henrikd@abc.dk',1539260683),(7,'Henrik','Thorn','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad','henrike@abc.dk',1539260935),(8,'Henrik','Thorn','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad','henrikf@abc.dk',1539277503),(9,'Henrik','Thorn','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad','henrikg@abc.dk',1539277743),(10,'Henrik','Thorn','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad','henrikh@abc.dk',1539277791),(11,'Henrik','Thorn','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad','henriki@abc.dk',1539277902),(12,'Henrik','Thorn','ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad','henrikj@abc.dk',1539335661),(13,'null','null','null','null',1539338689);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

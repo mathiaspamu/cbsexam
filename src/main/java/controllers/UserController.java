@@ -47,7 +47,8 @@ public class UserController {
                         rs.getString("first_name"),
                         rs.getString("last_name"),
                         rs.getString("password"),
-                        rs.getString("email"));
+                        rs.getString("email"),
+                        rs.getString("token"));
 
         // return the create object
         return user;
@@ -92,7 +93,8 @@ public class UserController {
                         rs.getString("first_name"),
                         rs.getString("last_name"),
                         rs.getString("password"),
-                        rs.getString("email"));
+                        rs.getString("email"),
+                        rs.getString("token"));
 
         // Add element to list
         users.add(user);
@@ -145,53 +147,105 @@ public class UserController {
     String success = "User was successfully deleted";
     String failure = "The system failed to delete user";
     String sql = "DELETE FROM user WHERE id=" + userId;
+    boolean status;
 
     // Check for DB connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    dbCon.executeUpdate(sql, success, failure);
+    status = dbCon.executeUpdate(sql, success, failure);
 
-    return false;
+    return status;
   }
 
-  public static String authorizeUser(User user) {
+  public static User updateUser(User user) {
+    boolean status;
 
+    String success = "User successfully updated";
+    String failure = "Failed to update user";
+    String sql = "UPDATE user SET first_name='"
+            + user.getFirstname()
+            + "',"
+            + "last_name='"
+            + user.getLastname()
+            + "',"
+            + "password='"
+            + user.getPassword()
+            + "',"
+            + "email='"
+            + user.getEmail()
+            + "' WHERE id="
+            + user.getId();
+
+    // Check for connection
+    if (dbCon == null)
+      dbCon = new DatabaseController();
+
+      status = dbCon.executeUpdate(sql, success, failure);
+
+      if (status)
+        return user;
+      else
+        return null;
+  }
+
+  public static User authorizeUser(User user) {
+
+    User userLogin = null;
+    boolean status;
     String success = "success";
     String failure = "failure";
-    String sql = "SELECT email, password FROM cbsexam.user WHERE email = '" + user.getEmail() + "' AND password = '" + Hashing.sha(user.getPassword()) + "' OR password = '" + user.getPassword() + "')";
+    String sql = "SELECT user.id, user.first_name, user.last_name, user.password, user.email, user.token"
+            + " FROM user " + "WHERE user.email = '" + user.getEmail() + "' AND " + "user.password = '" + user.getPassword() + "'";
 
     // Check for connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    // Actually do the query
-    ResultSet rs = dbCon.executeQuery(sql, success, failure);
-    User userLogin = null;
-
     try {
+      // Actually do the query
+      ResultSet rs = dbCon.executeQuery(sql, success, failure);
+
       // Get first and only object
       if (rs.next()) {
 
-        user = new User(
+        userLogin = new User(
                 rs.getInt("id"),
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("password"),
-                rs.getString("email"));
+                rs.getString("email"),
+                rs.getString("token"));
 
-        try {
-          Algorithm algorithm = Algorithm.HMAC256("secret");
-          String token = JWT.create()
-                  .withIssuer("auth0")
-                  .sign(algorithm);
-        } catch (JWTCreationException exception){
-          //Invalid Signing configuration / Couldn't convert Claims.
-          System.out.println("Something went wrong" + exception.getMessage());
+        if (userLogin.getToken() == null) {
+          try {
+            Algorithm algorithm = Algorithm.HMAC256("secret");
+            String token = JWT.create()
+                    .withIssuer("auth0")
+                    .sign(algorithm);
+
+            user.setToken(token);
+
+            String tokenSuccess = "Token created.";
+            String tokenFailure = "Token not created";
+            String sqlToken = "UPDATE user SET token = '" + user.getToken() + "' WHERE email = '" + user.getEmail()
+                    + "' AND password = '" + user.getPassword() + "'";
+
+            status = dbCon.executeUpdate(sqlToken, tokenSuccess, tokenFailure);
+
+            if (status)
+              return userLogin;
+          } catch (JWTCreationException exception){
+            //Invalid Signing configuration / Couldn't convert Claims.
+            System.out.println("Something went wrong" + exception.getMessage());
+          }
+        } else {
+          System.out.println("JWT not created. Try again.");
         }
 
+        /*
         // Verifying the token
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
 
@@ -205,9 +259,7 @@ public class UserController {
           // Invalid signature/claims
           System.out.println("Something went wrong with verifying the token" + exception1.getMessage());
         }
-
-        // Return the token directly
-        return token;
+        */
 
       } else {
         System.out.println("No user found");
@@ -219,6 +271,5 @@ public class UserController {
 
     // Return null
     return null;
-
   }
 }

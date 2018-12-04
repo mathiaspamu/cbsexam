@@ -21,7 +21,7 @@ public class UserCache {
         this.ttl = Config.getUserTtl();
     }
 
-    public ArrayList<User> getUsers(Boolean forceUpdate) {
+    public ArrayList<User> getUsers(boolean forceUpdate) {
 
         if (forceUpdate
                 || ((this.created + this.ttl) >= (System.currentTimeMillis() / 1000L))
