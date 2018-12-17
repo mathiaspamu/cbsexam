@@ -10,13 +10,16 @@ public class Product {
   private int stock;
   private long createdTime;
 
-  public Product(int id, String name, String sku, float price, String description, int stock) {
+  public Product() {}
+
+  public Product(int id, String name, String sku, float price, String description, int stock, long createdTime) {
     this.id = id;
     this.name = name;
     this.sku = sku;
     this.price = price;
     this.description = description;
     this.stock = stock;
+    this.createdTime = createdTime;
   }
 
   public int getId() {
@@ -59,19 +62,19 @@ public class Product {
     this.description = description;
   }
 
-  public long getCreatedTime() {
-    return createdTime;
-  }
-
-  public void setCreatedTime(long createdTime) {
-    this.createdTime = createdTime;
-  }
-
   public int getStock() {
     return stock;
   }
 
   public void setStock(int stock) {
     this.stock = stock;
+  }
+
+  public long getCreatedTime() {
+    return createdTime;
+  }
+
+  public void setCreatedTime(long createdTime) {
+    this.createdTime = createdTime;
   }
 }

@@ -1,5 +1,7 @@
 package com.cbsexam;
 
+import cache.OrderCache;
+import cache.ProductCache;
 import cache.UserCache;
 import com.google.gson.Gson;
 import controllers.UserController;
@@ -13,6 +15,10 @@ import utils.Log;
 
 @Path("user")
 public class UserEndpoints {
+
+  private UserCache userCache = new UserCache();
+  private ProductCache productCache = new ProductCache();
+  private OrderCache orderCache = new OrderCache();
 
   /**
    * @param idUser
@@ -32,7 +38,7 @@ public class UserEndpoints {
     json = Encryption.encryptDecryptXOR(json);
 
     // Return the user with the status code 200
-    // TODO: What should happen if something breaks down?
+    // TODO: What should happen if something breaks down? (FIX - see assignment)
     return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
   }
 
@@ -46,6 +52,8 @@ public class UserEndpoints {
 
     // Get a list of users
     ArrayList<User> users = UserController.getUsers();
+
+    userCache.getUsers(false);
 
     // TODO: Add Encryption to JSON (FIX)
     // Transfer users to json in order to return it to the user
@@ -79,16 +87,14 @@ public class UserEndpoints {
     }
   }
 
-  // TODO: Make the system able to login users and assign them a token to use throughout the system. (underway)
+  // TODO: Make the system able to login users and assign them a token to use throughout the system. (FIX)
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response userLogin(String body) {
 
     User user = new Gson().fromJson(body, User.class);
-
     User userLogin;
-
     userLogin = UserController.authorizeUser(user);
 
     try {
@@ -104,7 +110,7 @@ public class UserEndpoints {
       return null;
     }
 
-  // TODO: Make the system able to delete users (underway)
+  // TODO: Make the system able to delete users (FIX)
   @DELETE
   @Path("/{userId}")
   public Response deleteUser(@PathParam("userId") int userId) {
@@ -115,10 +121,10 @@ public class UserEndpoints {
     if (report)
       return Response.status(204).type(MediaType.APPLICATION_JSON_TYPE).build();
     else
-      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("Endpoint not implemented yet").build();
+      return Response.status(405).type(MediaType.APPLICATION_JSON_TYPE).entity("Endpoint not implemented yet").build();
   }
 
-  // TODO: Make the system able to update users (underway)
+  // TODO: Make the system able to update users (FIX)
   @PUT
   @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)

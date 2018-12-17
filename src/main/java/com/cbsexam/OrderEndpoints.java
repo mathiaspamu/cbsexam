@@ -72,11 +72,9 @@ public class OrderEndpoints {
     String json = new Gson().toJson(createdOrder);
 
     // Return the data to the user
-    if (createdOrder != null) {
-      // Return a response with status 200 and JSON as type
+    if (createdOrder != null)
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
-    } else {
-
+    else {
       // Return a response with status 400 and a message in text
       return Response.status(400).entity("Could not create user").build();
     }

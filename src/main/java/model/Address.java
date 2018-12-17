@@ -18,13 +18,6 @@ public class Address {
     this.zipCode = zipCode;
   }
 
-  public Address(String name, String streetAddress, String city, String zipCode){
-    this.name = name;
-    this.streetAddress = streetAddress;
-    this.city = city;
-    this.zipCode = zipCode;
-  }
-
   public String getName() {
     return name;
   }

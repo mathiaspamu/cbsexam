@@ -24,11 +24,13 @@ DROP TABLE IF EXISTS `address`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `address` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
   `name` varchar(45) COLLATE utf8_danish_ci NOT NULL,
   `city` varchar(45) COLLATE utf8_danish_ci NOT NULL,
   `zipcode` varchar(45) COLLATE utf8_danish_ci NOT NULL,
   `street_address` varchar(255) COLLATE utf8_danish_ci NOT NULL,
   PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES user(`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -39,7 +41,7 @@ CREATE TABLE `address` (
 
 LOCK TABLES `address` WRITE;
 /*!40000 ALTER TABLE `address` DISABLE KEYS */;
-INSERT INTO `address` VALUES (1,'Henrik Thorn','København','2200','Amagerbrogade'),(2,'ITK','København','2400','Lygten'),(3,'Henrik Thorn','København','2200','Amagerbrogade'),(4,'ITK','København','2400','Lygten'),(5,'Henrik Thorn','København','2200','Amagerbrogade'),(6,'ITK','København','2400','Lygten'),(7,'Henrik Thorn','København','2200','Amagerbrogade'),(8,'ITK','København','2400','Lygten'),(9,'Henrik Thorn','København','2200','Amagerbrogade'),(10,'ITK','København','2400','Lygten'),(11,'Henrik Thorn','København','2200','Amagerbrogade'),(12,'ITK','København','2400','Lygten');
+INSERT INTO `address` VALUES (1, 1, 'Henrik Thorn','København','2200','Amagerbrogade'),(2, 2, 'ITK','København','2400','Lygten'),(3, 3, 'Henrik Thorn','København','2200','Amagerbrogade'),(4, 4, 'ITK','København','2400','Lygten'),(5, 5, 'Henrik Thorn','København','2200','Amagerbrogade'),(6, 6, 'ITK','København','2400','Lygten'),(7, 7, 'Henrik Thorn','København','2200','Amagerbrogade'),(8, 8, 'ITK','København','2400','Lygten'),(9, 9, 'Henrik Thorn','København','2200','Amagerbrogade'),(10, 10, 'ITK','København','2400','Lygten'),(11, 11, 'Henrik Thorn','København','2200','Amagerbrogade'),(12, 12, 'ITK','København','2400','Lygten');
 /*!40000 ALTER TABLE `address` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -87,6 +89,9 @@ CREATE TABLE `orders` (
   `created_at` int(11) NOT NULL,
   `updated_at` int(11) NOT NULL,
   PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES user(`id`),
+  FOREIGN KEY (`billing_address_id`) REFERENCES address(`id`),
+  FOREIGN KEY (`shipping_address_id`) REFERENCES address(`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -146,6 +151,7 @@ CREATE TABLE `user` (
   `password` varchar(255) COLLATE utf8_danish_ci NOT NULL,
   `email` varchar(255) COLLATE utf8_danish_ci NOT NULL,
   `token` VARCHAR(255) NULL,
+  `salt` blob NULL,
   `created_at` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),

@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import model.User;
 import utils.Config;
 
-//TODO: Build this cache and use it. (underway)
+//TODO: Build this cache and use it. (FIX)
 public class UserCache {
 
     // List of users
-    private ArrayList<User> users;
+    private ArrayList<User> users = new ArrayList<>();
 
     // Time cache should live
     private long ttl;
@@ -27,8 +27,12 @@ public class UserCache {
                 || ((this.created + this.ttl) >= (System.currentTimeMillis() / 1000L))
                 || this.users.isEmpty()) {
 
+            users = UserController.getUsers();
+
+            /* måske skal det her slettes
             // Get users from controller, since we wish to update
             ArrayList<User> users = UserController.getUsers();
+            */
 
             // Set users for the instance and set the created timestamp
             this.users = users;

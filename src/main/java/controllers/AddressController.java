@@ -50,7 +50,7 @@ public class AddressController {
     }
 
     // Returns null if we can't find anything.
-    return address;
+    return null;
   }
 
   public static Address createAddress(Address address) {

@@ -5,11 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import model.User;
 import utils.Hashing;
 import utils.Log;
@@ -27,6 +24,7 @@ public class UserController {
     String success = "success";
     String failure = "failure";
     String sql = "SELECT * FROM user where id=" + id;
+    User user;
 
     // Check for connection
     if (dbCon == null) {
@@ -35,7 +33,6 @@ public class UserController {
 
     // Actually do the executeQuery
     ResultSet rs = dbCon.executeQuery(sql, success, failure);
-    User user = null;
 
     try {
 
@@ -48,7 +45,8 @@ public class UserController {
                         rs.getString("last_name"),
                         rs.getString("password"),
                         rs.getString("email"),
-                        rs.getString("token"));
+                        rs.getString("token"),
+                        rs.getLong("created_at"));
 
         // return the create object
         return user;
@@ -60,7 +58,7 @@ public class UserController {
     }
 
     // Return null
-    return user;
+    return null;
   }
 
   /**
@@ -73,15 +71,15 @@ public class UserController {
     String success = "success";
     String failure = "failure";
     String sql = "SELECT * FROM user";
+    ArrayList<User> users = new ArrayList<User>();
 
     // Check for DB connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    // Do the executeQuery and initialyze an empty list for use if we don't get results
+    // Do the executeQuery and initialize an empty list for use if we don't get results
     ResultSet rs = dbCon.executeQuery(sql, success, failure);
-    ArrayList<User> users = new ArrayList<User>();
 
     try {
 
@@ -94,11 +92,16 @@ public class UserController {
                         rs.getString("last_name"),
                         rs.getString("password"),
                         rs.getString("email"),
-                        rs.getString("token"));
+                        rs.getString("token"),
+                        rs.getLong("created_at"));
 
         // Add element to list
         users.add(user);
       }
+
+      if (users.isEmpty())
+        return null;
+
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
     }
@@ -122,6 +125,7 @@ public class UserController {
             + "', "
             + user.getCreatedTime()
             + ")";
+    boolean status;
 
     // Write in log that we've reach this step
     Log.writeLog(UserController.class.getName(), user, "Actually creating a user in DB", 0);
@@ -135,11 +139,25 @@ public class UserController {
     }
 
     // Insert the user in the DB
-    // TODO: Hash the user password before saving it.
+    // TODO: Hash the user password before saving it. (FIX, created time instead of salt)
     dbCon.executeUpdate(sql, success, failure);
 
+    try {
+      // byte[] salt = Hashing.generateSalt();
+
+      user.setPassword(Hashing.sha(user.getPassword(), user.getCreatedTime()));
+
+      status = dbCon.executeUpdate(sql, success, failure);
+
+      if (status)
+        return user;
+
+    } catch (Exception e) {
+      System.out.println("Exception occurred. Try again.");
+    }
+
     // Return user
-    return user;
+    return null;
   }
 
   public static boolean deleteUser(int userId) {
@@ -160,7 +178,6 @@ public class UserController {
   }
 
   public static User updateUser(User user) {
-    boolean status;
 
     String success = "User successfully updated";
     String failure = "Failed to update user";
@@ -177,6 +194,7 @@ public class UserController {
             + user.getEmail()
             + "' WHERE id="
             + user.getId();
+    boolean status;
 
     // Check for connection
     if (dbCon == null)
@@ -193,11 +211,14 @@ public class UserController {
   public static User authorizeUser(User user) {
 
     User userLogin = null;
-    boolean status;
     String success = "success";
     String failure = "failure";
     String sql = "SELECT user.id, user.first_name, user.last_name, user.password, user.email, user.token"
             + " FROM user " + "WHERE user.email = '" + user.getEmail() + "' AND " + "user.password = '" + user.getPassword() + "'";
+    ResultSet resultSet;
+    User loginUser;
+    String token;
+    boolean status;
 
     // Check for connection
     if (dbCon == null) {
@@ -217,12 +238,13 @@ public class UserController {
                 rs.getString("last_name"),
                 rs.getString("password"),
                 rs.getString("email"),
-                rs.getString("token"));
+                rs.getString("token"),
+                rs.getLong("created_at"));
 
         if (userLogin.getToken() == null) {
           try {
             Algorithm algorithm = Algorithm.HMAC256("secret");
-            String token = JWT.create()
+            token = JWT.create()
                     .withIssuer("auth0")
                     .sign(algorithm);
 
@@ -244,22 +266,6 @@ public class UserController {
         } else {
           System.out.println("JWT not created. Try again.");
         }
-
-        /*
-        // Verifying the token
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
-
-        try {
-          Algorithm algorithm = Algorithm.HMAC256("secret");
-          JWTVerifier verifier = JWT.require(algorithm)
-                  .withIssuer("auth0")
-                  .build(); //Reusable verifier instance
-          DecodedJWT jwt = verifier.verify(token);
-        } catch (JWTVerificationException exception1){
-          // Invalid signature/claims
-          System.out.println("Something went wrong with verifying the token" + exception1.getMessage());
-        }
-        */
 
       } else {
         System.out.println("No user found");

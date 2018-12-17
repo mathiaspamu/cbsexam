@@ -7,14 +7,10 @@ public class LineItem {
   private int quantity;
   private float price;
 
+  public LineItem() {}
+
   public LineItem(int id, Product product, int quantity, float price) {
     this.id = id;
-    this.product = product;
-    this.quantity = quantity;
-    this.price = price;
-  }
-
-  public LineItem(Product product, int quantity, float price) {
     this.product = product;
     this.quantity = quantity;
     this.price = price;

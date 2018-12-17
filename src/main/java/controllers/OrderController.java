@@ -22,7 +22,7 @@ public class OrderController {
 
     String success = "success";
     String failure = "failure";
-    String sql = "SELECT * FROM orders where id=" + id;
+    String sql = "SELECT * FROM orders where id = " + id;
 
     // Check for DB connection
     if (dbCon == null) {
@@ -64,7 +64,7 @@ public class OrderController {
     }
 
     // Returns null
-    return order;
+    return null;
   }
 
   /**
@@ -156,7 +156,7 @@ public class OrderController {
     // Save the user to the database and save them back to initial order instance
     order.setCustomer(UserController.createUser(order.getCustomer()));
 
-    // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts. (underway)
+    // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts. (FIXgbb)
 
     Connection connection = null;
 

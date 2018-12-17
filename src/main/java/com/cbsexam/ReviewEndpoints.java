@@ -31,6 +31,9 @@ public class ReviewEndpoints {
     json = Encryption.encryptDecryptXOR(json);
 
     // Return a response with status 200 and JSON as type
+    if (reviews.isEmpty())
+      return Response.status(404).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    else
     return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
   }
 

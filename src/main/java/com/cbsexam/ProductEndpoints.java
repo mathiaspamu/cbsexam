@@ -37,7 +37,10 @@ public class ProductEndpoints {
     json = Encryption.encryptDecryptXOR(json);
 
     // Return a response with status 200 and JSON as type
-    return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
+    if (product == null)
+      return Response.status(404).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    else
+      return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
   }
 
   /** @return Responses */
@@ -54,7 +57,10 @@ public class ProductEndpoints {
     json = Encryption.encryptDecryptXOR(json);
 
     // Return a response with status 200 and JSON as type
-    return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
+    if (products == null)
+      return Response.status(404).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    else
+      return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
   }
 
   @POST
@@ -72,11 +78,9 @@ public class ProductEndpoints {
     String json = new Gson().toJson(createdProduct);
 
     // Return the data to the user
-    if (createdProduct != null) {
-      // Return a response with status 200 and JSON as type
+    if (createdProduct != null)
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
-    } else {
+    else
       return Response.status(400).entity("Could not create user").build();
     }
   }
-}

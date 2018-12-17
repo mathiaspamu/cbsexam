@@ -40,7 +40,8 @@ public class ProductController {
                 rs.getString("sku"),
                 rs.getFloat("price"),
                 rs.getString("description"),
-                rs.getInt("stock"));
+                rs.getInt("stock"),
+                rs.getLong("created_at"));
 
         // Return the product
         return product;
@@ -52,7 +53,7 @@ public class ProductController {
     }
 
     // Return empty object
-    return product;
+    return null;
   }
 
   public static Product getProductBySku(String sku) {
@@ -79,7 +80,8 @@ public class ProductController {
                 rs.getString("sku"),
                 rs.getFloat("price"),
                 rs.getString("description"),
-                rs.getInt("stock"));
+                rs.getInt("stock"),
+                rs.getLong("created_at"));
 
         return product;
       } else {
@@ -89,7 +91,7 @@ public class ProductController {
       System.out.println(ex.getMessage());
     }
 
-    return product;
+    return null;
   }
 
   /**
@@ -121,10 +123,14 @@ public class ProductController {
                 rs.getString("sku"),
                 rs.getFloat("price"),
                 rs.getString("description"),
-                rs.getInt("stock"));
+                rs.getInt("stock"),
+                rs.getLong("created_at"));
 
         products.add(product);
       }
+
+      if (products.isEmpty())
+        return null;
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
     }
@@ -162,17 +168,10 @@ public class ProductController {
     }
 
     // Insert the product in the DB
-    dbCon.executeUpdate(sql, success, failure);
-
-    //if (productID != 0) {
-      //Update the productid of the product before returning
-      //product.setId(productID);
-    //} else{
-      // Return null if product has not been inserted into database
-      //return null;
-    //}
-
-    // Return product
-    return product;
+    boolean state = dbCon.executeUpdate(sql, success, failure);
+    if (state)
+      return product;
+    else
+      return null;
   }
 }

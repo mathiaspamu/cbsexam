@@ -10,13 +10,16 @@ public class User {
   private String token;
   private static long createdTime;
 
-  public User(int id, String firstname, String lastname, String password, String email, String token) {
+  public User() {}
+
+  public User(int id, String firstname, String lastname, String password, String email, String token, Long createdTime) {
     this.id = id;
     this.firstname = firstname;
     this.lastname = lastname;
     this.password = password;
     this.email = email;
     this.token = token;
+    this.createdTime = createdTime;
   }
 
   public int getId() {
